@@ -8,6 +8,6 @@
   "background_color": "#f4ecdd",
   "theme_color": "#191816",
   "icons": [
-    {"src":"assets/czyfit-logo.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+    {"src":"assets/czyfit-mark.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
   ]
 }
