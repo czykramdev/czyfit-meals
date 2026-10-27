@@ -1,1 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="256" fill="#191816"/><circle cx="256" cy="256" r="222" fill="none" stroke="#e6d9bf" stroke-width="3"/><circle cx="256" cy="256" r="198" fill="none" stroke="#667354" stroke-width="2"/><path d="M150 164c-35 27-50 58-50 92 0 63 49 109 114 109 36 0 66-13 88-39l-36-35c-13 15-29 23-49 23-36 0-61-25-61-59s25-59 61-59c19 0 35 7 48 21l35-36c-22-25-51-37-85-37-25 0-47 7-65 20z" fill="#f4ecdd"/><path d="M310 174h91v40h-39v146h-49V214h-38v-40z" fill="#b9784f"/><text x="256" y="423" text-anchor="middle" fill="#e6d9bf" font-family="Arial,sans-serif" font-weight="700" font-size="23" letter-spacing="7">MEALS</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080">
+<rect width="1080" height="1080" fill="#f3eadb"/>
+<circle cx="540" cy="405" r="255" fill="#171615"/>
+<circle cx="540" cy="405" r="226" fill="none" stroke="#928d81" stroke-width="10" stroke-dasharray="5 27" stroke-linecap="round"/>
+<path d="M640 290 A154 154 0 1 0 640 520" fill="none" stroke="#f3eadb" stroke-width="68" stroke-linecap="round"/>
+<path d="M500 350 H592 Q615 350 601 370 L542 444 H594 Q614 444 614 464 Q614 484 594 484 H501 Q477 484 490 462 L550 389 H500 Q480 389 480 369 Q480 350 500 350Z" fill="#fff"/>
+<text x="540" y="800" text-anchor="middle" fill="#171615" font-family="Arial,Helvetica,sans-serif" font-size="152" font-weight="900" letter-spacing="-9">CzyFit</text>
+<text x="540" y="878" text-anchor="middle" fill="#171615" font-family="Arial,Helvetica,sans-serif" font-size="58" font-weight="500" letter-spacing="22">MEALS</text>
+</svg>
