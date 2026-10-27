@@ -101,7 +101,7 @@ serve(async (req) => {
     const vapidPrivateKey = Deno.env.get("VAPID_PRIVATE_KEY");
     if (vapidPublicKey && vapidPrivateKey) {
       try {
-        webpush.setVapidDetails("mailto:orders@czyfit-meals.local", vapidPublicKey, vapidPrivateKey);
+        webpush.setVapidDetails("https://czykramdev.github.io/czyfit-meals/", vapidPublicKey, vapidPrivateKey);
         const { data: subscriptions, error: subscriptionError } = await supabase
           .from("push_subscriptions")
           .select("endpoint,subscription");
@@ -112,7 +112,7 @@ serve(async (req) => {
             try {
               await webpush.sendNotification(row.subscription, JSON.stringify({
                 title: "New CzyFit order",
-                body: `${orderNumber} · ₱${total} · ${name}`,
+                body: `${orderNumber} · ₱${total} · New order received`,
                 url: "https://czykramdev.github.io/czyfit-meals/admin-app/"
               }));
               return { endpoint: row.endpoint, ok: true };
