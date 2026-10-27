@@ -1,0 +1,13 @@
+{
+  "name": "CzyFit Meals",
+  "short_name": "CzyFit Meals",
+  "description": "Feel-good meal prep, made for real life.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4ecdd",
+  "theme_color": "#191816",
+  "icons": [
+    {"src":"assets/czyfit-logo.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
+}
