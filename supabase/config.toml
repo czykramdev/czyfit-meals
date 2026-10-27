@@ -1,0 +1,2 @@
+[functions.owner-password-setup]
+verify_jwt = false
