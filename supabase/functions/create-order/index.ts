@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import webpush from "npm:web-push@3.6.7";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -94,6 +95,43 @@ serve(async (req) => {
       return reply({ error: "We couldn't save the full order. Please try again." }, 500);
     }
 
+    // Push notifications are best-effort: never fail a saved customer order if push is unavailable.
+    let pushSent = 0;
+    const vapidPublicKey = Deno.env.get("VAPID_PUBLIC_KEY");
+    const vapidPrivateKey = Deno.env.get("VAPID_PRIVATE_KEY");
+    if (vapidPublicKey && vapidPrivateKey) {
+      try {
+        webpush.setVapidDetails("mailto:orders@czyfit-meals.local", vapidPublicKey, vapidPrivateKey);
+        const { data: subscriptions, error: subscriptionError } = await supabase
+          .from("push_subscriptions")
+          .select("endpoint,subscription");
+        if (subscriptionError) {
+          console.error("push subscription lookup failed", subscriptionError);
+        } else {
+          const outcomes = await Promise.all((subscriptions || []).map(async (row) => {
+            try {
+              await webpush.sendNotification(row.subscription, JSON.stringify({
+                title: "New CzyFit order",
+                body: `${orderNumber} · ₱${total} · ${name}`,
+                url: "https://czykramdev.github.io/czyfit-meals/admin-app/"
+              }));
+              return { endpoint: row.endpoint, ok: true };
+            } catch (error) {
+              const statusCode = Number((error as { statusCode?: number })?.statusCode || 0);
+              if (statusCode === 404 || statusCode === 410) {
+                await supabase.from("push_subscriptions").delete().eq("endpoint", row.endpoint);
+              }
+              console.error("push notification failed", statusCode || error);
+              return { endpoint: row.endpoint, ok: false };
+            }
+          }));
+          pushSent = outcomes.filter((result) => result.ok).length;
+        }
+      } catch (error) {
+        console.error("push notification setup failed", error);
+      }
+    }
+
     const notifyTo = Deno.env.get("ORDER_NOTIFICATION_EMAIL");
     const resendKey = Deno.env.get("RESEND_API_KEY");
     let emailSent = false;
@@ -112,7 +150,7 @@ serve(async (req) => {
       emailSent = emailResp.ok;
       if (!emailResp.ok) console.error("email notification failed", await emailResp.text());
     }
-    return reply({ ok: true, order_number: order.order_number, total_php: total, email_sent: emailSent });
+    return reply({ ok: true, order_number: order.order_number, total_php: total, email_sent: emailSent, push_sent: pushSent });
   } catch (error) {
     console.error("create-order error", error);
     return reply({ error: "Unexpected server error. Please try again." }, 500);
