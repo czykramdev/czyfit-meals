@@ -1,4 +1,3 @@
-// Public browser configuration only. Replace these values with your Supabase project's
-// Project URL and publishable/anon key. NEVER put a service-role key in this file.
-window.CZYFIT_SUPABASE_URL = "";
-window.CZYFIT_SUPABASE_ANON_KEY = "";
+// Public browser configuration only. Never put a service-role or secret key here.
+window.CZYFIT_SUPABASE_URL = "https://rghksczdviwzaaesglpf.supabase.co";
+window.CZYFIT_SUPABASE_ANON_KEY = "sb_publishable_OUFV8lSbMTeB88CgENDxpg_kK4k4oCs";
