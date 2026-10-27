@@ -8,6 +8,14 @@ create table if not exists public.push_subscriptions (
 
 alter table public.push_subscriptions enable row level security;
 
+drop policy if exists "Owners can view own push subscriptions" on public.push_subscriptions;
+create policy "Owners can view own push subscriptions" on public.push_subscriptions
+  for select to authenticated
+  using (
+    user_id = auth.uid()
+    and exists (select 1 from public.order_admins a where a.user_id = auth.uid())
+  );
+
 drop policy if exists "Owners can add own push subscriptions" on public.push_subscriptions;
 create policy "Owners can add own push subscriptions" on public.push_subscriptions
   for insert to authenticated
