@@ -58,3 +58,9 @@ create policy "Public can view available meals" on public.meals
 -- insert into public.order_admins (user_id)
 -- select id from auth.users where email = 'YOUR_LOGIN_EMAIL';
 -- Never create a public read policy for orders or put the service-role key in the website.
+
+-- Allow an authenticated owner to read only their own allowlist entry;
+-- this also lets the RLS admin-check subqueries resolve for that owner.
+drop policy if exists "Admins can view own allowlist entry" on public.order_admins;
+create policy "Admins can view own allowlist entry" on public.order_admins
+  for select to authenticated using (user_id = auth.uid());
