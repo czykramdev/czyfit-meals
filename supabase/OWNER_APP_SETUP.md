@@ -1,38 +1,41 @@
 # CzyFit Owner app setup
 
-The standalone owner app is at:
+Standalone owner app:
 https://czykramdev.github.io/czyfit-meals/admin-app/
 
-## 1. Apply the database migration
+## 1. Apply the two database migrations
 
-In Supabase Dashboard → SQL Editor, run the complete contents of:
-supabase/migrations/20261028_owner_push_notifications.sql
+In Supabase Dashboard → SQL Editor, run the complete contents of these files (one at a time):
+- `supabase/migrations/20261028_owner_password_setup.sql`
+- `supabase/migrations/20261028_owner_push_notifications.sql`
 
-This creates a private push-subscription table. Only signed-in users already present in `public.order_admins` can manage their own subscription.
+These create one-time password-setup state and private push-subscription storage. Only signed-in users already present in `public.order_admins` can manage push subscriptions.
 
-## 2. Set the VAPID private key as a Supabase Edge Function secret
+## 2. Add Edge Function secrets
 
 In Supabase Dashboard → Edge Functions → Secrets, add:
 
-- Name: `VAPID_PRIVATE_KEY`
-- Value: the private VAPID key supplied to the owner in the project handoff
+- `VAPID_PRIVATE_KEY`: the private VAPID key supplied in the project handoff.
+- `OWNER_PASSWORD_SETUP_TOKEN`: the one-time setup code supplied in the project handoff.
 
-The matching public key is already in `admin-app/index.html`. Never put the private key in GitHub or any browser file.
+The matching VAPID public key is already in `admin-app/index.html`. Never put either secret in GitHub or any browser file.
 
-## 3. Redeploy the create-order Edge Function
+## 3. Deploy the Edge Functions
 
-Deploy the updated `supabase/functions/create-order/index.ts` to the existing `create-order` function. The new push code is best-effort: an unavailable push provider must not cause a saved order to fail. Existing email notifications remain unchanged.
+Deploy the updated `supabase/functions/create-order/index.ts` to the existing `create-order` function. It sends best-effort push alerts after an order and its items have been saved; push failure must not fail checkout. Existing email notifications remain unchanged.
 
-## 4. Set the owner password
+Deploy `supabase/functions/owner-password-setup/index.ts` as `owner-password-setup`. This endpoint must have JWT verification disabled because the initial setup runs before login; its high-entropy one-time code, owner allowlist check, and database one-time state are the security controls. If deploying with Supabase CLI, `supabase/config.toml` contains this setting. If deploying in the Dashboard, turn off Verify JWT for this function only. Never disable verification for other functions as a workaround.
 
-Open the owner app and sign in using the existing secure magic link once (after the Supabase email limit resets), then use **Set or change admin password**. After that, routine sign-ins use email + password. Do not remove the owner from `public.order_admins`.
+## 4. Set your password without a magic link
 
-## 5. Install and enable notifications on iPhone
+Open the owner app, expand **First-time password setup (one-time code)**, enter the email of the existing account that is already in `public.order_admins`, paste the one-time setup code, and choose a strong password of at least 12 characters. After success, sign in using email + password. The setup code can only be used once. After you successfully set the password, remove the `OWNER_PASSWORD_SETUP_TOKEN` secret from Supabase.
 
-1. Open the owner app in Safari: https://czykramdev.github.io/czyfit-meals/admin-app/
+## 5. Install and enable iPhone notifications
+
+1. Open https://czykramdev.github.io/czyfit-meals/admin-app/ in Safari.
 2. Share → Add to Home Screen.
 3. Open the installed **CzyFit Owner** icon.
 4. Sign in, then tap **Enable phone notifications** and allow notifications.
 5. Place a test order and verify that a notification arrives.
 
-Push notifications require the SQL migration, the private VAPID secret, the updated Edge Function deployment, and permission on the installed app. Until all four are completed and tested, do not assume push alerts are live.
+Push notifications require both migrations, the VAPID private secret, the updated `create-order` deployment, and permission on the installed app. Until these are completed and tested, do not assume push alerts are live.
