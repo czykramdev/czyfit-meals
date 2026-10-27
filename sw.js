@@ -1,4 +1,4 @@
-const CACHE="czyfit-meals-v4";
+const CACHE="czyfit-meals-v5";
 const FILES=["./","./index.html","./manifest.json","./assets/czyfit-mark.svg","./assets/czyfit-cover.svg"];
 self.addEventListener("install",event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES))));
 self.addEventListener("activate",event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key))))));
