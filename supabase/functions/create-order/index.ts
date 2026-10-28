@@ -43,8 +43,8 @@ serve(async (req) => {
       return reply({ error: "Please provide your name, mobile number, and a valid preferred date." }, 400);
     if (requestedDate < new Date(Date.now() + 86400000).toISOString().slice(0, 10))
       return reply({ error: "Please choose a date at least one day from today." }, 400);
-    if (paymentMethod !== "gcash") return reply({ error: "Choose GCash for this checkout." }, 400);
-    const paymentPlan = data.payment_plan === "full" ? "full" : "deposit";
+    if (!["gcash", "maya"].includes(paymentMethod)) return reply({ error: "Choose GCash or Maya for this checkout." }, 400);
+    const paymentPlan = "full";
     if (fulfilment === "delivery" && !address)
       return reply({ error: "Please enter a delivery address." }, 400);
     if (!items.length || items.length > 20) return reply({ error: "Your cart is empty or contains too many items." }, 400);
@@ -64,7 +64,7 @@ serve(async (req) => {
 
     const orderNumber = "CZY-" + crypto.randomUUID().slice(0, 8).toUpperCase();
     const paymentStatus = "pending";
-    const amountDueNow = paymentPlan === "full" ? total : Math.ceil(total / 2);
+    const amountDueNow = total;
     const balanceDue = total - amountDueNow;
     const { data: order, error: orderError } = await supabase.from("orders").insert({
       order_number: orderNumber,
