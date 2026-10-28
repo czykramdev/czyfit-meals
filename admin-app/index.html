@@ -99,5 +99,4 @@ function renderOrders(){
 }
 setInterval(()=>{if(db&&activeUserId&&!document.hidden)load(true)},30000);
 async function saveOrder(id){const {error}=await db.from("orders").update({status:$("s-"+id).value,payment_status:$("p-"+id).value,updated_at:new Date().toISOString()}).eq("id",id);if(error){alert(error.message);return}await load()}
-(id){const {error}=await db.from("orders").update({status:$("s-"+id).value,payment_status:$("p-"+id).value,updated_at:new Date().toISOString()}).eq("id",id);if(error){alert(error.message);return}await load()}
 </script></body></html>
