@@ -43,8 +43,8 @@ serve(async (req) => {
       return reply({ error: "Please provide your name, mobile number, and a valid preferred date." }, 400);
     if (requestedDate < new Date(Date.now() + 86400000).toISOString().slice(0, 10))
       return reply({ error: "Please choose a date at least one day from today." }, 400);
-    if (!["cash", "gcash", "maya"].includes(paymentMethod))
-      return reply({ error: "Choose cash, GCash, or Maya." }, 400);
+    if (paymentMethod !== "gcash") return reply({ error: "Choose GCash for this checkout." }, 400);
+    const paymentPlan = data.payment_plan === "full" ? "full" : "deposit";
     if (fulfilment === "delivery" && !address)
       return reply({ error: "Please enter a delivery address." }, 400);
     if (!items.length || items.length > 20) return reply({ error: "Your cart is empty or contains too many items." }, 400);
@@ -63,7 +63,9 @@ serve(async (req) => {
     if (total > 100000) return reply({ error: "Order total exceeds the allowed limit." }, 400);
 
     const orderNumber = "CZY-" + crypto.randomUUID().slice(0, 8).toUpperCase();
-    const paymentStatus = paymentMethod === "cash" ? "unpaid" : "pending";
+    const paymentStatus = "pending";
+    const amountDueNow = paymentPlan === "full" ? total : Math.ceil(total / 2);
+    const balanceDue = total - amountDueNow;
     const { data: order, error: orderError } = await supabase.from("orders").insert({
       order_number: orderNumber,
       customer_name: name,
@@ -75,6 +77,10 @@ serve(async (req) => {
       notes,
       payment_method: paymentMethod,
       payment_status: paymentStatus,
+      payment_plan: paymentPlan,
+      amount_due_now_php: amountDueNow,
+      amount_paid_php: 0,
+      balance_due_php: balanceDue,
       status: "pending",
       total_php: total,
     }).select("id,order_number,total_php,created_at").single();
@@ -144,13 +150,13 @@ serve(async (req) => {
           from: Deno.env.get("ORDER_EMAIL_FROM") || "CzyFit Meals <onboarding@resend.dev>",
           to: [notifyTo],
           subject: `New CzyFit order ${orderNumber} — ₱${total}`,
-          text: `A new order was placed.\n\nOrder: ${orderNumber}\nCustomer: ${name}\nPhone: ${phone}\nEmail: ${customerEmail || "Not provided"}\nDate: ${requestedDate}\nFulfilment: ${fulfilment}\nAddress: ${address || "Pickup"}\nPayment: ${paymentMethod} (${paymentStatus})\n\nItems:\n${itemLines}\n\nTotal: ₱${total}\nNotes: ${notes || "None"}\n\nOpen the CzyFit Meals owner dashboard to manage this order.`,
+          text: `A new order was placed.\n\nOrder: ${orderNumber}\nCustomer: ${name}\nPhone: ${phone}\nEmail: ${customerEmail || "Not provided"}\nDate: ${requestedDate}\nFulfilment: ${fulfilment}\nAddress: ${address || "Pickup"}\nPayment: ${paymentMethod} · ${paymentPlan} · pay now ₱${amountDueNow} (${paymentStatus})\n\nItems:\n${itemLines}\n\nTotal: ₱${total}\nNotes: ${notes || "None"}\n\nOpen the CzyFit Meals owner dashboard to manage this order.`,
         }),
       });
       emailSent = emailResp.ok;
       if (!emailResp.ok) console.error("email notification failed", await emailResp.text());
     }
-    return reply({ ok: true, order_number: order.order_number, total_php: total, email_sent: emailSent, push_sent: pushSent });
+    return reply({ ok: true, order_number: order.order_number, total_php: total, payment_plan: paymentPlan, amount_due_now_php: amountDueNow, balance_due_php: balanceDue, email_sent: emailSent, push_sent: pushSent });
   } catch (error) {
     console.error("create-order error", error);
     return reply({ error: "Unexpected server error. Please try again." }, 500);
