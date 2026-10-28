@@ -22,7 +22,9 @@ async function enableNotifications(){
   if(permission!=="granted"){out.textContent="Notification permission was not granted.";return}
   const registration=await navigator.serviceWorker.ready;
   let subscription=await registration.pushManager.getSubscription();
-  if(!subscription)subscription=await registration.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:urlBase64ToUint8Array(VAPID_PUBLIC_KEY)});
+  const expectedKey=urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
+  if(subscription){const currentKey=subscription.options?.applicationServerKey;if(currentKey){const currentBytes=Array.from(new Uint8Array(currentKey));if(currentBytes.length!==expectedKey.length||currentBytes.some((v,i)=>v!==expectedKey[i])){await subscription.unsubscribe();subscription=null}}}
+  if(!subscription)subscription=await registration.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:expectedKey});
   const {error}=await db.from("push_subscriptions").upsert({endpoint:subscription.endpoint,subscription:subscription.toJSON(),user_id:activeUserId},{onConflict:"endpoint"});
   if(error)throw error;
   out.textContent="Phone notifications are enabled on this device. Place a test order to verify delivery.";
