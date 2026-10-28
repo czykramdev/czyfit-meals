@@ -99,5 +99,5 @@ function renderOrders(){
  for(const o of rows){const st=$("s-"+o.id),ps=$("p-"+o.id);if(st)st.value=o.status||"pending";if(ps)ps.value=o.payment_status||"unpaid"}
 }
 setInterval(()=>{if(db&&activeUserId&&!document.hidden)load(true)},30000);
-async function saveOrder(id){const {error}=await db.from("orders").update({status:$("s-"+id).value,payment_status:$("p-"+id).value,updated_at:new Date().toISOString()}).eq("id",id);if(error){alert(error.message);return}await load()}
+async function saveOrder(id){const paymentStatus=$("p-"+id).value;const order=cachedOrders.find(o=>o.id===id);const total=Number(order?.total_php||0);const amountPaid=paymentStatus==="paid"?total:paymentStatus==="paid_half"?Math.ceil(total/2):0;const balance=Math.max(0,total-amountPaid);const {error}=await db.from("orders").update({status:$("s-"+id).value,payment_status:paymentStatus,amount_paid_php:amountPaid,balance_due_php:balance,updated_at:new Date().toISOString()}).eq("id",id);if(error){alert(error.message);return}await load()}
 </script></body></html>
