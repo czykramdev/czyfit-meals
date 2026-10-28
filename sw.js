@@ -1,4 +1,4 @@
-const CACHE = "czyfit-meals-v6";
+const CACHE = "czyfit-meals-v7";
 const FILES = ["./", "./index.html", "./manifest.json"];
 
 self.addEventListener("install", event => {
