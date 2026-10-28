@@ -64,9 +64,9 @@ async function syncExistingPushSubscription(){
   out.textContent="Notifications are on ✓ This device is connected automatically.";
  }catch(err){console.error("Could not sync existing push subscription",err);out.textContent="Could not reconnect notifications: "+(err.message||String(err));}
 }
-async function load(){
+async function load(silent=false){
  show("login",false);show("dashboard",true);
- $("orders").innerHTML='<div class="empty">Loading orders…</div>';
+ if(!silent)$("orders").innerHTML='<div class="empty">Loading orders…</div>';
  const {data,error}=await db.from("orders").select("id,order_number,customer_name,phone,customer_email,requested_date,fulfilment,delivery_address,notes,status,total_php,payment_method,payment_status,created_at,order_items(meal_name,quantity,unit_price_php)").order("created_at",{ascending:false}).limit(100);
  if(error){$("orders").innerHTML='<div class="empty">Could not load orders. Check that your signed-in user is in public.order_admins. '+esc(error.message)+'</div>';return}
  cachedOrders=data||[];
@@ -76,7 +76,7 @@ async function load(){
  $("statProgress").textContent=cachedOrders.filter(o=>["confirmed","preparing","ready"].includes((o.status||"").toLowerCase())).length;
  $("statRevenue").textContent=php(cachedOrders.filter(o=>!["cancelled"].includes((o.status||"").toLowerCase())).reduce((sum,o)=>sum+Number(o.total_php||0),0));
  renderOrders();
- syncExistingPushSubscription();
+ if(!silent)syncExistingPushSubscription();
 }
 function renderOrders(){
  const query=($("orderSearch")?.value||"").trim().toLowerCase(),filter=$("statusFilter")?.value||"all";
@@ -97,6 +97,7 @@ function renderOrders(){
  }).join("");
  for(const o of rows){const st=$("s-"+o.id),ps=$("p-"+o.id);if(st)st.value=o.status||"pending";if(ps)ps.value=o.payment_status||"unpaid"}
 }
+setInterval(()=>{if(db&&activeUserId&&!document.hidden)load(true)},30000);
 async function saveOrder(id){const {error}=await db.from("orders").update({status:$("s-"+id).value,payment_status:$("p-"+id).value,updated_at:new Date().toISOString()}).eq("id",id);if(error){alert(error.message);return}await load()}
 (id){const {error}=await db.from("orders").update({status:$("s-"+id).value,payment_status:$("p-"+id).value,updated_at:new Date().toISOString()}).eq("id",id);if(error){alert(error.message);return}await load()}
 </script></body></html>
