@@ -1,0 +1,162 @@
+{
+  "weekLabel": "Nov 3–7 (sample menu)",
+  "orderBy": "Sat 6 PM",
+  "isSample": true,
+  "days": [
+    {
+      "day": "Monday",
+      "breakfast": {
+        "name": "Egg & veggie rice bowl",
+        "kcal": 350,
+        "p": 20,
+        "c": 42,
+        "f": 11
+      },
+      "lunch": {
+        "name": "Herb chicken, rice & mixed vegetables",
+        "kcal": 520,
+        "p": 42,
+        "c": 58,
+        "f": 12
+      },
+      "dinner": {
+        "name": "Lean beef rice bowl",
+        "kcal": 540,
+        "p": 38,
+        "c": 56,
+        "f": 16
+      },
+      "snack": {
+        "name": "Banana honey toast",
+        "kcal": 220,
+        "p": 6,
+        "c": 42,
+        "f": 4
+      }
+    },
+    {
+      "day": "Tuesday",
+      "breakfast": {
+        "name": "Tofu scramble & rice",
+        "kcal": 360,
+        "p": 19,
+        "c": 44,
+        "f": 11
+      },
+      "lunch": {
+        "name": "Garlic chicken & vegetables",
+        "kcal": 500,
+        "p": 43,
+        "c": 48,
+        "f": 13
+      },
+      "dinner": {
+        "name": "Beef and veggie rice bowl",
+        "kcal": 550,
+        "p": 37,
+        "c": 57,
+        "f": 17
+      },
+      "snack": {
+        "name": "Cream cheese wheat toast",
+        "kcal": 210,
+        "p": 7,
+        "c": 28,
+        "f": 8
+      }
+    },
+    {
+      "day": "Wednesday",
+      "breakfast": {
+        "name": "Egg fried rice with vegetables",
+        "kcal": 390,
+        "p": 18,
+        "c": 48,
+        "f": 13
+      },
+      "lunch": {
+        "name": "Chicken breast rice bowl",
+        "kcal": 510,
+        "p": 44,
+        "c": 54,
+        "f": 11
+      },
+      "dinner": {
+        "name": "Tofu, rice & mixed vegetables",
+        "kcal": 480,
+        "p": 25,
+        "c": 56,
+        "f": 15
+      },
+      "snack": {
+        "name": "Banana puffed-rice crunch",
+        "kcal": 200,
+        "p": 4,
+        "c": 43,
+        "f": 2
+      }
+    },
+    {
+      "day": "Thursday",
+      "breakfast": {
+        "name": "Honey banana wheat toast",
+        "kcal": 320,
+        "p": 9,
+        "c": 58,
+        "f": 6
+      },
+      "lunch": {
+        "name": "Lean beef with rice & vegetables",
+        "kcal": 550,
+        "p": 38,
+        "c": 56,
+        "f": 17
+      },
+      "dinner": {
+        "name": "Olive-oil herb chicken bowl",
+        "kcal": 520,
+        "p": 43,
+        "c": 53,
+        "f": 12
+      },
+      "snack": {
+        "name": "Cream cheese banana toast",
+        "kcal": 235,
+        "p": 7,
+        "c": 37,
+        "f": 7
+      }
+    },
+    {
+      "day": "Friday",
+      "breakfast": {
+        "name": "Veggie egg rice bowl",
+        "kcal": 365,
+        "p": 20,
+        "c": 43,
+        "f": 12
+      },
+      "lunch": {
+        "name": "Chicken breast & mixed vegetables",
+        "kcal": 495,
+        "p": 44,
+        "c": 48,
+        "f": 11
+      },
+      "dinner": {
+        "name": "Lean beef and rice bowl",
+        "kcal": 545,
+        "p": 38,
+        "c": 57,
+        "f": 16
+      },
+      "snack": {
+        "name": "Honey banana puffed rice",
+        "kcal": 205,
+        "p": 4,
+        "c": 45,
+        "f": 2
+      }
+    }
+  ]
+}

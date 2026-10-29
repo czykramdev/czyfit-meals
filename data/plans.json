@@ -1,0 +1,124 @@
+{
+  "currency": "PHP",
+  "billing": "weekly",
+  "dayRate": null,
+  "plans": [
+    {
+      "id": "balanced",
+      "name": "Balanced",
+      "macros": {
+        "carbs": 50,
+        "protein": 20,
+        "fat": 30
+      },
+      "tiers": [
+        {
+          "kcal": 1200,
+          "price": 2200
+        },
+        {
+          "kcal": 1500,
+          "price": 2300
+        },
+        {
+          "kcal": 1800,
+          "price": 2550
+        },
+        {
+          "kcal": 2000,
+          "price": 2850
+        },
+        {
+          "kcal": 2200,
+          "price": 3250
+        },
+        {
+          "kcal": 2500,
+          "price": 3450
+        },
+        {
+          "kcal": 2800,
+          "price": 3750
+        }
+      ]
+    },
+    {
+      "id": "low-carb-high-protein",
+      "name": "Low Carb High Protein",
+      "macros": {
+        "carbs": 35,
+        "protein": 30,
+        "fat": 35
+      },
+      "tiers": [
+        {
+          "kcal": 1200,
+          "price": 2550
+        },
+        {
+          "kcal": 1500,
+          "price": 2750
+        },
+        {
+          "kcal": 1800,
+          "price": 3050
+        },
+        {
+          "kcal": 2000,
+          "price": 3350
+        },
+        {
+          "kcal": 2200,
+          "price": 3750
+        },
+        {
+          "kcal": 2500,
+          "price": 3950
+        },
+        {
+          "kcal": 2800,
+          "price": 4250
+        }
+      ]
+    },
+    {
+      "id": "low-carb-high-protein-plus",
+      "name": "Low Carb High Protein +",
+      "macros": {
+        "carbs": 30,
+        "protein": 35,
+        "fat": 35
+      },
+      "tiers": [
+        {
+          "kcal": 1200,
+          "price": 2850
+        },
+        {
+          "kcal": 1500,
+          "price": 3050
+        },
+        {
+          "kcal": 1800,
+          "price": 3350
+        },
+        {
+          "kcal": 2000,
+          "price": 3650
+        },
+        {
+          "kcal": 2200,
+          "price": 4050
+        },
+        {
+          "kcal": 2500,
+          "price": 4250
+        },
+        {
+          "kcal": 2800,
+          "price": 4550
+        }
+      ]
+    }
+  ]
+}

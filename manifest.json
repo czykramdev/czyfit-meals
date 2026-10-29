@@ -1,13 +1,18 @@
 {
   "name": "CzyFit Meals",
   "short_name": "CzyFit Meals",
-  "description": "Feel-good meal prep, made for real life.",
+  "description": "Weekly meal prep plans, made for real life.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f4ecdd",
-  "theme_color": "#191816",
+  "background_color": "#F3EBDD",
+  "theme_color": "#151413",
   "icons": [
-    {"src":"assets/czyfit-mark.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+    {
+      "src": "assets/czyfit-mark.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
   ]
 }
