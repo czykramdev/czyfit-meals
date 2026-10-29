@@ -24,7 +24,7 @@
 <script>
 "use strict";
 // Set this once to your Facebook Page username, without the URL.
-const FACEBOOK_URL="https://www.facebook.com/share/19ucJcrzfL/?mibextid=wwXIfr"; const MESSENGER_URL="https://m.me/"; const INSTAGRAM_URL="https://www.instagram.com/czyfitmeals/"; const DAY_RATE_MARKUP=1.15,DAY_RATE_ROUND_TO=10,TDEE_MIN_KCAL=1200;
+const FACEBOOK_URL="https://www.facebook.com/share/19ucJcrzfL/?mibextid=wwXIfr"; const MESSENGER_URL="https://m.me/1375161199015466"; const INSTAGRAM_URL="https://www.instagram.com/czyfitmeals/"; const DAY_RATE_MARKUP=1.15,DAY_RATE_ROUND_TO=10,TDEE_MIN_KCAL=1200;
 const DAYS=["Monday","Tuesday","Wednesday","Thursday","Friday"],MEALS=[["breakfast","Breakfast"],["lunch","Lunch"],["dinner","Dinner"],["snack","Snack"]];
 let plansData=null,menuData=null,activeDay="Monday",toastTimer,statusTimer;
 const $=id=>document.getElementById(id),peso=n=>new Intl.NumberFormat("en-PH",{style:"currency",currency:"PHP",maximumFractionDigits:0}).format(n),esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
