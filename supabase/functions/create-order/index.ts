@@ -7,6 +7,12 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
+const PLAN_PRICES: Record<string, Record<number, number>> = {
+  "balanced": {1200:2200,1500:2300,1800:2550,2000:2850,2200:3250,2500:3450,2800:3750},
+  "low-carb-high-protein": {1200:2550,1500:2750,1800:3050,2000:3350,2200:3750,2500:3950,2800:4250},
+  "low-carb-high-protein-plus": {1200:2850,1500:3050,1800:3350,2000:3650,2200:4050,2500:4250,2800:4550}
+};
+const PLAN_NAMES: Record<string,string> = {"balanced":"Balanced","low-carb-high-protein":"Low Carb High Protein","low-carb-high-protein-plus":"Low Carb High Protein +"};
 const MENU: Record<number, { name: string; price: number; kcal: number; protein: number; carbs: number; fat: number }> = {
   1: { name: "Lemon Herb Chicken", price: 189, kcal: 485, protein: 42, carbs: 44, fat: 13 },
   2: { name: "Teriyaki Chicken Bowl", price: 179, kcal: 520, protein: 36, carbs: 62, fat: 12 },
@@ -38,6 +44,7 @@ serve(async (req) => {
     const notes = String(data.notes ?? "").trim().slice(0, 1000);
     const address = String(data.address ?? "").trim().slice(0, 500);
     const items = Array.isArray(data.items) ? data.items : [];
+    const planOrder = data.plan_order && typeof data.plan_order === "object" ? data.plan_order : null;
 
     if (!name || !phone || !/^\d{4}-\d{2}-\d{2}$/.test(requestedDate))
       return reply({ error: "Please provide your name, mobile number, and a valid preferred date." }, 400);
@@ -47,11 +54,25 @@ serve(async (req) => {
     const paymentPlan = "full";
     if (fulfilment === "delivery" && !address)
       return reply({ error: "Please enter a delivery address." }, 400);
-    if (!items.length || items.length > 20) return reply({ error: "Your cart is empty or contains too many items." }, 400);
+    if ((!planOrder && !items.length) || items.length > 20) return reply({ error: "Your order is empty. Please select a plan and days." }, 400);
 
-    const normalized = [];
+    const normalized: Array<{id:number;quantity:number;meal:{name:string;price:number;kcal:number;protein:number;carbs:number;fat:number}}> = [];
     let total = 0;
-    for (const item of items) {
+    let orderNotes = notes;
+    if (planOrder) {
+      const planId = String(planOrder.plan_id || "");
+      const kcal = Number(planOrder.kcal);
+      const planName = PLAN_NAMES[planId];
+      const weekPrice = PLAN_PRICES[planId]?.[kcal];
+      const days = Array.isArray(planOrder.days) ? planOrder.days.map((d: unknown) => String(d)).filter((d: string) => ["Monday","Tuesday","Wednesday","Thursday","Friday"].includes(d)) : [];
+      if (!planName || !weekPrice || !days.length || days.length > 5) return reply({error:"Invalid plan, calorie tier, or selected days."},400);
+      const rate = Math.ceil((weekPrice / 5 * 1.15) / 10) * 10;
+      total = planOrder.order_type === "week" ? weekPrice : Math.min(days.length * rate, weekPrice);
+      const macros = planOrder.macros && typeof planOrder.macros === "object" ? planOrder.macros : {};
+      orderNotes = [notes, `PLAN: ${planName}`, `TIER: ${kcal} kcal/day`, `ORDER TYPE: ${planOrder.order_type === "week" ? "Full week" : "Selected days"}`, `DAYS: ${days.join(", ")}`, `MACROS: P ${Number(macros.p)||0}g · C ${Number(macros.c)||0}g · F ${Number(macros.f)||0}g`, `PRICE: ₱${total}`].filter(Boolean).join("\\n");
+      normalized.push({id:0,quantity:days.length,meal:{name:`${planName} · ${kcal} kcal/day · ${days.join(", ")}`,price:Math.round(total/days.length),kcal,protein:Number(macros.p)||0,carbs:Number(macros.c)||0,fat:Number(macros.f)||0}});
+    }
+    for (const item of (planOrder ? [] : items)) {
       const id = Number(item.id);
       const quantity = Number(item.quantity);
       const meal = MENU[id];
@@ -60,7 +81,7 @@ serve(async (req) => {
       total += meal.price * quantity;
       normalized.push({ id, quantity, meal });
     }
-    if (total > 100000) return reply({ error: "Order total exceeds the allowed limit." }, 400);
+    if (total <= 0 || total > 100000) return reply({ error: "Order total exceeds the allowed limit." }, 400);
 
     const orderNumber = "CZY-" + crypto.randomUUID().slice(0, 8).toUpperCase();
     const paymentStatus = "unpaid";
@@ -74,7 +95,7 @@ serve(async (req) => {
       requested_date: requestedDate,
       fulfilment,
       delivery_address: fulfilment === "delivery" ? address : null,
-      notes,
+      notes: orderNotes,
       payment_method: paymentMethod,
       payment_status: paymentStatus,
       payment_plan: paymentPlan,
