@@ -63,7 +63,7 @@ serve(async (req) => {
     if (total > 100000) return reply({ error: "Order total exceeds the allowed limit." }, 400);
 
     const orderNumber = "CZY-" + crypto.randomUUID().slice(0, 8).toUpperCase();
-    const paymentStatus = "pending";
+    const paymentStatus = "unpaid";
     const amountDueNow = total;
     const balanceDue = total - amountDueNow;
     const { data: order, error: orderError } = await supabase.from("orders").insert({
@@ -150,7 +150,7 @@ serve(async (req) => {
           from: Deno.env.get("ORDER_EMAIL_FROM") || "CzyFit Meals <onboarding@resend.dev>",
           to: [notifyTo],
           subject: `New CzyFit order ${orderNumber} — ₱${total}`,
-          text: `A new order was placed.\n\nOrder: ${orderNumber}\nCustomer: ${name}\nPhone: ${phone}\nEmail: ${customerEmail || "Not provided"}\nDate: ${requestedDate}\nFulfilment: ${fulfilment}\nAddress: ${address || "Pickup"}\nPayment: ${paymentMethod} · ${paymentPlan} · pay now ₱${amountDueNow} (${paymentStatus})\n\nItems:\n${itemLines}\n\nTotal: ₱${total}\nNotes: ${notes || "None"}\n\nOpen the CzyFit Meals owner dashboard to manage this order.`,
+          text: `A new order was received; payment is not yet verified.\n\nOrder: ${orderNumber}\nCustomer: ${name}\nPhone: ${phone}\nEmail: ${customerEmail || "Not provided"}\nDate: ${requestedDate}\nFulfilment: ${fulfilment}\nAddress: ${address || "Pickup"}\nPayment: ${paymentMethod} · ${paymentPlan} · pay now ₱${amountDueNow} (${paymentStatus})\n\nItems:\n${itemLines}\n\nTotal: ₱${total}\nNotes: ${notes || "None"}\n\nOpen the CzyFit Meals owner dashboard to manage this order.`,
         }),
       });
       emailSent = emailResp.ok;
