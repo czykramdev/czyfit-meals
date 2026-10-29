@@ -14,31 +14,38 @@
       "tiers": [
         {
           "kcal": 1200,
-          "price": 2200
+          "price": 2200,
+          "dayRate": null
         },
         {
           "kcal": 1500,
-          "price": 2300
+          "price": 2300,
+          "dayRate": null
         },
         {
           "kcal": 1800,
-          "price": 2550
+          "price": 2550,
+          "dayRate": null
         },
         {
           "kcal": 2000,
-          "price": 2850
+          "price": 2850,
+          "dayRate": null
         },
         {
           "kcal": 2200,
-          "price": 3250
+          "price": 3250,
+          "dayRate": null
         },
         {
           "kcal": 2500,
-          "price": 3450
+          "price": 3450,
+          "dayRate": null
         },
         {
           "kcal": 2800,
-          "price": 3750
+          "price": 3750,
+          "dayRate": null
         }
       ]
     },
@@ -53,31 +60,38 @@
       "tiers": [
         {
           "kcal": 1200,
-          "price": 2550
+          "price": 2550,
+          "dayRate": null
         },
         {
           "kcal": 1500,
-          "price": 2750
+          "price": 2750,
+          "dayRate": null
         },
         {
           "kcal": 1800,
-          "price": 3050
+          "price": 3050,
+          "dayRate": null
         },
         {
           "kcal": 2000,
-          "price": 3350
+          "price": 3350,
+          "dayRate": null
         },
         {
           "kcal": 2200,
-          "price": 3750
+          "price": 3750,
+          "dayRate": null
         },
         {
           "kcal": 2500,
-          "price": 3950
+          "price": 3950,
+          "dayRate": null
         },
         {
           "kcal": 2800,
-          "price": 4250
+          "price": 4250,
+          "dayRate": null
         }
       ]
     },
@@ -92,31 +106,38 @@
       "tiers": [
         {
           "kcal": 1200,
-          "price": 2850
+          "price": 2850,
+          "dayRate": null
         },
         {
           "kcal": 1500,
-          "price": 3050
+          "price": 3050,
+          "dayRate": null
         },
         {
           "kcal": 1800,
-          "price": 3350
+          "price": 3350,
+          "dayRate": null
         },
         {
           "kcal": 2000,
-          "price": 3650
+          "price": 3650,
+          "dayRate": null
         },
         {
           "kcal": 2200,
-          "price": 4050
+          "price": 4050,
+          "dayRate": null
         },
         {
           "kcal": 2500,
-          "price": 4250
+          "price": 4250,
+          "dayRate": null
         },
         {
           "kcal": 2800,
-          "price": 4550
+          "price": 4550,
+          "dayRate": null
         }
       ]
     }
