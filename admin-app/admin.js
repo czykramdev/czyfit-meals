@@ -111,22 +111,29 @@ async function deleteOrder(id,button){
 
 async function clearAllOrders(){
  const button=$("clearOrders"),message=$("clearOrdersMessage");
- if(!activeUserId){message.textContent="Please sign in again before clearing orders.";return}
- if(!cachedOrders.length){message.textContent="There are no orders in the dashboard list to clear.";return}
+ if(!activeUserId){message.textContent="Please sign in again before clearing orders.";alert("Your owner session is missing. Sign out, sign in again, and retry.");return}
+ if(!cachedOrders.length){message.textContent="There are no orders in the dashboard list to clear.";alert("No orders are currently loaded. Refresh the dashboard and check the order list first.");return}
  const first=window.confirm("This permanently deletes ALL orders stored in CzyFit, including their order-item rows. This cannot be undone. Continue?");
  if(!first)return;
- const typed=window.prompt('To confirm permanent deletion of every order, type DELETE ALL ORDERS exactly:');
- if(typed!=="DELETE ALL ORDERS"){message.textContent="Nothing was deleted. Confirmation did not match.";return}
- button.disabled=true;button.textContent="Deleting orders…";message.textContent="Securely deleting orders…";
+ const typed=window.prompt('Type exactly DELETE ALL ORDERS to permanently delete every stored order:');
+ if(typed===null)return;
+ if(typed.trim()!=="DELETE ALL ORDERS"){message.textContent="Nothing was deleted. You must type DELETE ALL ORDERS exactly.";alert("Confirmation did not match. Nothing was deleted.");return}
+ button.disabled=true;button.textContent="Deleting…";message.textContent="Contacting Supabase to delete all orders…";
  try{
+  if(!db)throw new Error("Supabase is not connected. Refresh and sign in again.");
   const {data,error}=await db.rpc("clear_all_orders");
   if(error)throw error;
-  seenOrderIds.clear();
-  await load(true);
-  message.textContent=Number(data)===1?"Successfully deleted 1 order.":`Successfully deleted ${Number(data)||0} orders.`;
+  const count=Number(data);
+  cachedOrders=[];seenOrderIds.clear();
+  $("statAll").textContent="0";$("statNew").textContent="0";$("statProgress").textContent="0";$("statRevenue").textContent=php(0);
+  renderOrders();
+  message.textContent="Successfully deleted "+(Number.isFinite(count)?count:0)+" orders.";
+  alert(message.textContent);
  }catch(err){
   console.error("Clear all orders failed",err);
-  message.textContent="Could not clear orders: "+(err.message||String(err))+". Confirm the owner cleanup SQL migration has been run in Supabase.";
+  const detail=err?.message||err?.details||String(err);
+  message.textContent="FAILED: "+detail;
+  alert("Could not clear orders. Supabase returned: "+detail+"\n\nNo success was reported. Check that the clear_all_orders SQL function exists and that your signed-in account is in public.order_admins.");
  }finally{
   button.disabled=false;button.textContent="Clear all test orders";
  }
