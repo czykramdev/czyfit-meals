@@ -40,7 +40,7 @@ serve(async (req) => {
     const customerEmail = String(data.email ?? "").trim().slice(0, 254);
     const requestedDate = String(data.date ?? "");
     const fulfilment = data.fulfilment === "delivery" ? "delivery" : "pickup";
-    const paymentMethod = String(data.payment_method ?? "");
+    const paymentMethod = null;
     const notes = String(data.notes ?? "").trim().slice(0, 1000);
     const address = String(data.address ?? "").trim().slice(0, 500);
     const items = Array.isArray(data.items) ? data.items : [];
