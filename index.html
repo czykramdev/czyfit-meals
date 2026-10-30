@@ -71,7 +71,7 @@ async function placePlanOrder(){const o=currentOrder();if(!o.plan||!o.tier){show
 function downloadOrderImage(text){
  const canvas=document.createElement("canvas"),ctx=canvas.getContext("2d"),W=1200,P=84,inner=W-P*2;
  const rows=text.split("\n").filter(Boolean).map(line=>{const i=line.indexOf(":");return i>0?{label:line.slice(0,i).trim(),value:line.slice(i+1).trim()}:{label:"",value:line.trim()}});
- const wrap=(value,font,max)=>{ctx.font=font;const out=[];let line="";for(const word of String(value).split(/\\s+/)){const test=line?line+" "+word:word;if(ctx.measureText(test).width>max&&line){out.push(line);line=word}else line=test}if(line)out.push(line);return out};
+ const wrap=(value,font,max)=>{ctx.font=font;const out=[];let line="";for(const word of String(value).split(/\s+/)){const test=line?line+" "+word:word;if(ctx.measureText(test).width>max&&line){out.push(line);line=word}else line=test}if(line)out.push(line);return out};
  let y=P+190;const layout=[];
  for(const row of rows){const lines=wrap(row.value,"27px Arial",inner-64),h=Math.max(92,lines.length*39+48);layout.push({...row,lines,y,h});y+=h+14}
  const H=y+P+50;canvas.width=W;canvas.height=H;
