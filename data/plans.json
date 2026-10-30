@@ -13,11 +13,6 @@
       },
       "tiers": [
         {
-          "kcal": 1200,
-          "price": 2200,
-          "dayRate": null
-        },
-        {
           "kcal": 1500,
           "price": 2300,
           "dayRate": null
@@ -46,6 +41,11 @@
           "kcal": 2800,
           "price": 3750,
           "dayRate": null
+        },
+        {
+          "kcal": 3000,
+          "price": 3950,
+          "dayRate": null
         }
       ]
     },
@@ -58,11 +58,6 @@
         "fat": 35
       },
       "tiers": [
-        {
-          "kcal": 1200,
-          "price": 2550,
-          "dayRate": null
-        },
         {
           "kcal": 1500,
           "price": 2750,
@@ -92,6 +87,11 @@
           "kcal": 2800,
           "price": 4250,
           "dayRate": null
+        },
+        {
+          "kcal": 3000,
+          "price": 4450,
+          "dayRate": null
         }
       ]
     },
@@ -104,11 +104,6 @@
         "fat": 35
       },
       "tiers": [
-        {
-          "kcal": 1200,
-          "price": 2850,
-          "dayRate": null
-        },
         {
           "kcal": 1500,
           "price": 3050,
@@ -137,6 +132,11 @@
         {
           "kcal": 2800,
           "price": 4550,
+          "dayRate": null
+        },
+        {
+          "kcal": 3000,
+          "price": 4750,
           "dayRate": null
         }
       ]
