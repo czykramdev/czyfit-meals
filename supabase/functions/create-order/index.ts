@@ -8,9 +8,9 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 const PLAN_PRICES: Record<string, Record<number, number>> = {
-  "balanced": {1200:2200,1500:2300,1800:2550,2000:2850,2200:3250,2500:3450,2800:3750},
-  "low-carb-high-protein": {1200:2550,1500:2750,1800:3050,2000:3350,2200:3750,2500:3950,2800:4250},
-  "low-carb-high-protein-plus": {1200:2850,1500:3050,1800:3350,2000:3650,2200:4050,2500:4250,2800:4550}
+  "balanced": {1500:2300,1800:2550,2000:2850,2200:3250,2500:3450,2800:3750,3000:3950},
+  "low-carb-high-protein": {1500:2750,1800:3050,2000:3350,2200:3750,2500:3950,2800:4250,3000:4450},
+  "low-carb-high-protein-plus": {1500:3050,1800:3350,2000:3650,2200:4050,2500:4250,2800:4550,3000:4750}
 };
 const PLAN_NAMES: Record<string,string> = {"balanced":"Balanced","low-carb-high-protein":"Low Carb High Protein","low-carb-high-protein-plus":"Low Carb High Protein +"};
 const MENU: Record<number, { name: string; price: number; kcal: number; protein: number; carbs: number; fat: number }> = {
