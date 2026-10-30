@@ -50,8 +50,8 @@ serve(async (req) => {
       return reply({ error: "Please provide your name, mobile number, and a valid preferred date." }, 400);
     if (requestedDate < new Date(Date.now() + 86400000).toISOString().slice(0, 10))
       return reply({ error: "Please choose a date at least one day from today." }, 400);
-    if (!["gcash", "maya"].includes(paymentMethod)) return reply({ error: "Choose GCash or Maya for this checkout." }, 400);
-    const paymentPlan = "full";
+
+    const paymentPlan = "discuss_in_chat";
     if (fulfilment === "delivery" && !address)
       return reply({ error: "Please enter a delivery address." }, 400);
     if ((!planOrder && !items.length) || items.length > 20) return reply({ error: "Your order is empty. Please select a plan and days." }, 400);
@@ -85,8 +85,8 @@ serve(async (req) => {
 
     const orderNumber = "CZY-" + crypto.randomUUID().slice(0, 8).toUpperCase();
     const paymentStatus = "unpaid";
-    const amountDueNow = total;
-    const balanceDue = total - amountDueNow;
+    const amountDueNow = 0;
+    const balanceDue = total;
     const { data: order, error: orderError } = await supabase.from("orders").insert({
       order_number: orderNumber,
       customer_name: name,
@@ -171,7 +171,7 @@ serve(async (req) => {
           from: Deno.env.get("ORDER_EMAIL_FROM") || "CzyFit Meals <onboarding@resend.dev>",
           to: [notifyTo],
           subject: `New CzyFit order ${orderNumber} — ₱${total}`,
-          text: `A new order was received; payment is not yet verified.\n\nOrder: ${orderNumber}\nCustomer: ${name}\nPhone: ${phone}\nEmail: ${customerEmail || "Not provided"}\nDate: ${requestedDate}\nFulfilment: ${fulfilment}\nAddress: ${address || "Pickup"}\nPayment: ${paymentMethod} · ${paymentPlan} · pay now ₱${amountDueNow} (${paymentStatus})\n\nItems:\n${itemLines}\n\nTotal: ₱${total}\nNotes: ${notes || "None"}\n\nOpen the CzyFit Meals owner dashboard to manage this order.`,
+          text: `A new order request was received; awaiting customer confirmation in chat.\n\nOrder: ${orderNumber}\nCustomer: ${name}\nPhone: ${phone}\nEmail: ${customerEmail || "Not provided"}\nDate: ${requestedDate}\nFulfilment: ${fulfilment}\nAddress: ${address || "Pickup"}\nPayment: ${paymentMethod} · ${paymentPlan} · pay now ₱${amountDueNow} (${paymentStatus})\n\nItems:\n${itemLines}\n\nTotal: ₱${total}\nNotes: ${notes || "None"}\n\nOpen the CzyFit Meals owner dashboard to manage this order.`,
         }),
       });
       emailSent = emailResp.ok;
