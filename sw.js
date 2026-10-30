@@ -1,4 +1,4 @@
-const CACHE = "czyfit-meals-weekly-v24";
+const CACHE = "czyfit-meals-weekly-v25";
 const FILES = ["./", "./index.html", "./manifest.json", "./data/plans.json", "./data/menu.json", "./assets/czyfit-mark.svg"];
 
 self.addEventListener("install", event => {
