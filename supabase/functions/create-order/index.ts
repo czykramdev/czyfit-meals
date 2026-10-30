@@ -69,7 +69,18 @@ serve(async (req) => {
       const rate = Math.ceil((weekPrice / 5 * 1.15) / 10) * 10;
       total = planOrder.order_type === "week" ? weekPrice : Math.min(days.length * rate, weekPrice);
       const macros = planOrder.macros && typeof planOrder.macros === "object" ? planOrder.macros : {};
-      orderNotes = [notes, `PLAN: ${planName}`, `TIER: ${kcal} kcal/day`, `ORDER TYPE: ${planOrder.order_type === "week" ? "Full week" : "Selected days"}`, `DAYS: ${days.join(", ")}`, `MACROS: P ${Number(macros.p)||0}g · C ${Number(macros.c)||0}g · F ${Number(macros.f)||0}g`, `PRICE: ₱${total}`].filter(Boolean).join("\\n");
+      const menuSnapshot = planOrder.menu_snapshot && typeof planOrder.menu_snapshot === "object" ? planOrder.menu_snapshot : null;
+      const menuWeek = String(menuSnapshot?.week_label || "").trim().slice(0, 80);
+      const menuLines = Array.isArray(menuSnapshot?.days) ? menuSnapshot.days.slice(0, 5).map((entry: any) => {
+        const day = ["Monday","Tuesday","Wednesday","Thursday","Friday"].includes(String(entry?.day)) ? String(entry.day) : "";
+        const meals = Array.isArray(entry?.meals) ? entry.meals.slice(0, 4).map((meal: any) => String(meal?.type || "Meal").slice(0, 24) + ": " + String(meal?.name || "Not listed").slice(0, 120)).join("; ") : "";
+        return day ? day + ": " + meals : "";
+      }).filter(Boolean) : [];
+      const menuSnapshotNote = menuWeek ? "WEEKLY MENU: " + menuWeek + "\
+" + menuLines.join("\
+") : "";
+      orderNotes = [notes, `PLAN: ${planName}`, `TIER: ${kcal} kcal/day`, `ORDER TYPE: ${planOrder.order_type === "week" ? "Full week" : "Selected days"}`, `DAYS: ${days.join(", ")}`, `MACROS: P ${Number(macros.p)||0}g · C ${Number(macros.c)||0}g · F ${Number(macros.f)||0}g`, `PRICE: ₱${total}`, menuSnapshotNote].filter(Boolean).join("\
+");
       normalized.push({id:0,quantity:days.length,meal:{name:`${planName} · ${kcal} kcal/day · ${days.join(", ")}`,price:Math.round(total/days.length),kcal,protein:Number(macros.p)||0,carbs:Number(macros.c)||0,fat:Number(macros.f)||0}});
     }
     for (const item of (planOrder ? [] : items)) {
