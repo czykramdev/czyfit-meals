@@ -12,7 +12,7 @@ const PLAN_PRICES: Record<string, Record<number, number>> = {
   "low-carb-high-protein": {1500:2750,1800:3050,2000:3350,2200:3750,2500:3950,2800:4250,3000:4450},
   "low-carb-high-protein-plus": {1500:3050,1800:3350,2000:3650,2200:4050,2500:4250,2800:4550,3000:4750}
 };
-const PLAN_NAMES: Record<string,string> = {"balanced":"Balanced","low-carb-high-protein":"Low Carb High Protein","low-carb-high-protein-plus":"Low Carb High Protein +"};
+const PLAN_NAMES: Record<string,string> = {"balanced":"Balanced","low-carb-high-protein":"High Carb High Protein","low-carb-high-protein-plus":"Low Carb High Protein"};
 const MENU: Record<number, { name: string; price: number; kcal: number; protein: number; carbs: number; fat: number }> = {
   1: { name: "Lemon Herb Chicken", price: 189, kcal: 485, protein: 42, carbs: 44, fat: 13 },
   2: { name: "Teriyaki Chicken Bowl", price: 179, kcal: 520, protein: 36, carbs: 62, fat: 12 },
