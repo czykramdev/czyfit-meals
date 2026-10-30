@@ -33,7 +33,7 @@ async function enableNotifications(){
 }
 $("refresh").addEventListener("click",load);$("orderSearch").addEventListener("input",renderOrders);$("statusFilter").addEventListener("change",renderOrders);$("logout").addEventListener("click",async()=>{await db.auth.signOut();activeUserId=null;show("dashboard",false);show("login",true)});
 $("clearOrders").addEventListener("click",clearAllOrders);
-$("orders").addEventListener("click",e=>{const button=e.target.closest("[data-delete-order]");if(button)deleteOrder(button.dataset.deleteOrder,button)});
+$("orders").addEventListener("click",e=>{const saveButton=e.target.closest("[data-save-order]");if(saveButton){saveOrder(saveButton.dataset.saveOrder,saveButton);return}const deleteButton=e.target.closest("[data-delete-order]");if(deleteButton)deleteOrder(deleteButton.dataset.deleteOrder,deleteButton)});
 async function syncExistingPushSubscription(){
  const out=$("notificationMessage");
  if(!("serviceWorker" in navigator)||!("PushManager" in window)||!("Notification" in window)){out.textContent="Push notifications are not supported here. On iPhone, install the app to your Home Screen first.";return}
@@ -87,7 +87,34 @@ function renderOrders(){
  for(const o of rows){const st=$("s-"+o.id),ps=$("p-"+o.id);if(st)st.value=o.status||"pending";if(ps)ps.value=o.payment_status||"unpaid"}
 }
 setInterval(()=>{if(db&&activeUserId&&!document.hidden)load(true)},30000);
-async function saveOrder(id){const paymentStatus=$("p-"+id).value;const order=cachedOrders.find(o=>o.id===id);const total=Number(order?.total_php||0);const amountPaid=paymentStatus==="paid"?total:paymentStatus==="paid_half"?Math.ceil(total/2):0;const balance=Math.max(0,total-amountPaid);const {error}=await db.from("orders").update({status:$("s-"+id).value,payment_status:paymentStatus,amount_paid_php:amountPaid,balance_due_php:balance,updated_at:new Date().toISOString()}).eq("id",id);if(error){alert(error.message);return}await load()}
+async function saveOrder(id,button){
+ const statusSelect=$("s-"+id),paymentSelect=$("p-"+id);
+ if(!statusSelect||!paymentSelect){alert("Could not find the order status controls. Refresh the dashboard and try again.");return}
+ const paymentStatus=paymentSelect.value;
+ const order=cachedOrders.find(o=>String(o.id)===String(id));
+ if(!order){alert("This order is no longer in the current list. Refresh and try again.");return}
+ const total=Number(order.total_php||0);
+ const amountPaid=paymentStatus==="paid"?total:paymentStatus==="paid_half"?Math.ceil(total/2):0;
+ const balance=Math.max(0,total-amountPaid);
+ const originalLabel=button?.textContent||"Save changes";
+ if(button){button.disabled=true;button.textContent="Saving…"}
+ try{
+  const {error}=await db.from("orders").update({
+   status:statusSelect.value,
+   payment_status:paymentStatus,
+   amount_paid_php:amountPaid,
+   balance_due_php:balance,
+   updated_at:new Date().toISOString()
+  }).eq("id",id);
+  if(error)throw error;
+  if(button)button.textContent="Saved";
+  await load();
+ }catch(err){
+  console.error("Could not save order changes:",err);
+  alert("Could not save changes: "+(err.message||String(err)));
+  if(button){button.disabled=false;button.textContent=originalLabel}
+ }
+}
 
 
 async function deleteOrder(id,button){
