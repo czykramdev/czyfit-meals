@@ -51,11 +51,11 @@
     },
     {
       "id": "low-carb-high-protein",
-      "name": "Low Carb High Protein",
+      "name": "High Carb High Protein",
       "macros": {
-        "carbs": 35,
+        "carbs": 45,
         "protein": 30,
-        "fat": 35
+        "fat": 25
       },
       "tiers": [
         {
@@ -97,7 +97,7 @@
     },
     {
       "id": "low-carb-high-protein-plus",
-      "name": "Low Carb High Protein +",
+      "name": "Low Carb High Protein",
       "macros": {
         "carbs": 30,
         "protein": 35,
