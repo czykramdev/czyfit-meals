@@ -32,6 +32,7 @@ async function enableNotifications(){
  }catch(err){console.error(err);out.textContent="Could not enable notifications: "+(err.message||String(err))+". Check the push_subscriptions SQL migration and try again."}
 }
 $("refresh").addEventListener("click",load);$("orderSearch").addEventListener("input",renderOrders);$("statusFilter").addEventListener("change",renderOrders);$("logout").addEventListener("click",async()=>{await db.auth.signOut();activeUserId=null;show("dashboard",false);show("login",true)});
+$("clearOrders").addEventListener("click",clearAllOrders);
 async function syncExistingPushSubscription(){
  const out=$("notificationMessage");
  if(!("serviceWorker" in navigator)||!("PushManager" in window)||!("Notification" in window)){out.textContent="Push notifications are not supported here. On iPhone, install the app to your Home Screen first.";return}
@@ -86,3 +87,26 @@ function renderOrders(){
 }
 setInterval(()=>{if(db&&activeUserId&&!document.hidden)load(true)},30000);
 async function saveOrder(id){const paymentStatus=$("p-"+id).value;const order=cachedOrders.find(o=>o.id===id);const total=Number(order?.total_php||0);const amountPaid=paymentStatus==="paid"?total:paymentStatus==="paid_half"?Math.ceil(total/2):0;const balance=Math.max(0,total-amountPaid);const {error}=await db.from("orders").update({status:$("s-"+id).value,payment_status:paymentStatus,amount_paid_php:amountPaid,balance_due_php:balance,updated_at:new Date().toISOString()}).eq("id",id);if(error){alert(error.message);return}await load()}
+
+async function clearAllOrders(){
+ const button=$("clearOrders"),message=$("clearOrdersMessage");
+ if(!activeUserId){message.textContent="Please sign in again before clearing orders.";return}
+ if(!cachedOrders.length){message.textContent="There are no orders in the dashboard list to clear.";return}
+ const first=window.confirm("This permanently deletes ALL orders stored in CzyFit, including their order-item rows. This cannot be undone. Continue?");
+ if(!first)return;
+ const typed=window.prompt('To confirm permanent deletion of every order, type DELETE ALL ORDERS exactly:');
+ if(typed!=="DELETE ALL ORDERS"){message.textContent="Nothing was deleted. Confirmation did not match.";return}
+ button.disabled=true;button.textContent="Deleting orders…";message.textContent="Securely deleting orders…";
+ try{
+  const {data,error}=await db.rpc("clear_all_orders");
+  if(error)throw error;
+  seenOrderIds.clear();
+  await load(true);
+  message.textContent=Number(data)===1?"Successfully deleted 1 order.":`Successfully deleted ${Number(data)||0} orders.`;
+ }catch(err){
+  console.error("Clear all orders failed",err);
+  message.textContent="Could not clear orders: "+(err.message||String(err))+". Confirm the owner cleanup SQL migration has been run in Supabase.";
+ }finally{
+  button.disabled=false;button.textContent="Clear all test orders";
+ }
+}
