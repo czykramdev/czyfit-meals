@@ -10,28 +10,32 @@
         "kcal": 350,
         "p": 20,
         "c": 42,
-        "f": 11
+        "f": 11,
+        "image": null
       },
       "lunch": {
         "name": "Herb chicken, rice & mixed vegetables",
         "kcal": 520,
         "p": 42,
         "c": 58,
-        "f": 12
+        "f": 12,
+        "image": null
       },
       "dinner": {
         "name": "Lean beef rice bowl",
         "kcal": 540,
         "p": 38,
         "c": 56,
-        "f": 16
+        "f": 16,
+        "image": null
       },
       "snack": {
         "name": "Banana honey toast",
         "kcal": 220,
         "p": 6,
         "c": 42,
-        "f": 4
+        "f": 4,
+        "image": null
       }
     },
     {
@@ -41,28 +45,32 @@
         "kcal": 360,
         "p": 19,
         "c": 44,
-        "f": 11
+        "f": 11,
+        "image": null
       },
       "lunch": {
         "name": "Garlic chicken & vegetables",
         "kcal": 500,
         "p": 43,
         "c": 48,
-        "f": 13
+        "f": 13,
+        "image": null
       },
       "dinner": {
         "name": "Beef and veggie rice bowl",
         "kcal": 550,
         "p": 37,
         "c": 57,
-        "f": 17
+        "f": 17,
+        "image": null
       },
       "snack": {
         "name": "Cream cheese wheat toast",
         "kcal": 210,
         "p": 7,
         "c": 28,
-        "f": 8
+        "f": 8,
+        "image": null
       }
     },
     {
@@ -72,28 +80,32 @@
         "kcal": 390,
         "p": 18,
         "c": 48,
-        "f": 13
+        "f": 13,
+        "image": null
       },
       "lunch": {
         "name": "Chicken breast rice bowl",
         "kcal": 510,
         "p": 44,
         "c": 54,
-        "f": 11
+        "f": 11,
+        "image": null
       },
       "dinner": {
         "name": "Tofu, rice & mixed vegetables",
         "kcal": 480,
         "p": 25,
         "c": 56,
-        "f": 15
+        "f": 15,
+        "image": null
       },
       "snack": {
         "name": "Banana puffed-rice crunch",
         "kcal": 200,
         "p": 4,
         "c": 43,
-        "f": 2
+        "f": 2,
+        "image": null
       }
     },
     {
@@ -103,28 +115,32 @@
         "kcal": 320,
         "p": 9,
         "c": 58,
-        "f": 6
+        "f": 6,
+        "image": null
       },
       "lunch": {
         "name": "Lean beef with rice & vegetables",
         "kcal": 550,
         "p": 38,
         "c": 56,
-        "f": 17
+        "f": 17,
+        "image": null
       },
       "dinner": {
         "name": "Olive-oil herb chicken bowl",
         "kcal": 520,
         "p": 43,
         "c": 53,
-        "f": 12
+        "f": 12,
+        "image": null
       },
       "snack": {
         "name": "Cream cheese banana toast",
         "kcal": 235,
         "p": 7,
         "c": 37,
-        "f": 7
+        "f": 7,
+        "image": null
       }
     },
     {
@@ -134,28 +150,32 @@
         "kcal": 365,
         "p": 20,
         "c": 43,
-        "f": 12
+        "f": 12,
+        "image": null
       },
       "lunch": {
         "name": "Chicken breast & mixed vegetables",
         "kcal": 495,
         "p": 44,
         "c": 48,
-        "f": 11
+        "f": 11,
+        "image": null
       },
       "dinner": {
         "name": "Lean beef and rice bowl",
         "kcal": 545,
         "p": 38,
         "c": 57,
-        "f": 16
+        "f": 16,
+        "image": null
       },
       "snack": {
         "name": "Honey banana puffed rice",
         "kcal": 205,
         "p": 4,
         "c": 45,
-        "f": 2
+        "f": 2,
+        "image": null
       }
     }
   ],
