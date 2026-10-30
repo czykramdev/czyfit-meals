@@ -33,6 +33,7 @@ async function enableNotifications(){
 }
 $("refresh").addEventListener("click",load);$("orderSearch").addEventListener("input",renderOrders);$("statusFilter").addEventListener("change",renderOrders);$("logout").addEventListener("click",async()=>{await db.auth.signOut();activeUserId=null;show("dashboard",false);show("login",true)});
 $("clearOrders").addEventListener("click",clearAllOrders);
+$("orders").addEventListener("click",e=>{const button=e.target.closest("[data-delete-order]");if(button)deleteOrder(button.dataset.deleteOrder,button)});
 async function syncExistingPushSubscription(){
  const out=$("notificationMessage");
  if(!("serviceWorker" in navigator)||!("PushManager" in window)||!("Notification" in window)){out.textContent="Push notifications are not supported here. On iPhone, install the app to your Home Screen first.";return}
@@ -81,31 +82,58 @@ function renderOrders(){
   const isNew=status==="pending"&&Date.now()-new Date(o.created_at).getTime()<24*60*60*1000;
   const items=(o.order_items||[]).map(i=>i.quantity+" × "+i.meal_name+" — "+php(i.quantity*i.unit_price_php)).join("\n")||"No item details";
   const date=o.created_at?new Date(o.created_at).toLocaleString("en-PH",{dateStyle:"medium",timeStyle:"short"}):"Date unavailable";
-  return `<article class="order"><div class="order-top"><div style="min-width:0"><h3 class="order-title">${esc(o.order_number||"Order")}</h3><div class="order-meta">${esc(date)}</div><div class="chips" style="margin-top:9px;margin-bottom:0">${isNew?'<span class="chip new">✦ NEW ORDER</span>':""}<span class="chip ${esc(status)}">${status==="pending"?"AWAITING CUSTOMER CONFIRMATION":esc(status)}</span><span class="chip ${esc(pay)}">Payment: TO DISCUSS IN CHAT</span></div></div><div class="order-total">${php(o.total_php)}</div></div><div class="order-body"><div class="customer">${esc(o.customer_name||"Customer")}</div><div class="detail-grid"><div class="detail"><label>Contact</label>${esc(o.phone||"No phone")}<br>${esc(o.customer_email||"No email")}</div><div class="detail"><label>Requested date</label>${esc(o.requested_date||"Not specified")}<br>${esc(o.fulfilment||"Fulfilment not specified")}</div><div class="detail"><label>Delivery / pickup</label>${esc(o.delivery_address||"Pickup")}</div><div class="detail"><label>Payment</label>Discuss in Messenger / Instagram<br>Total: ${php(o.total_php)}<br>Not paid online</div></div><div class="items">${esc(items)}</div><div class="notes"><strong>Customer notes:</strong> ${esc(o.notes||"None")}</div><div class="order-actions"><div class="field"><label for="s-${esc(o.id)}">Order status</label><select id="s-${esc(o.id)}"><option value="pending">Awaiting customer confirmation</option><option value="confirmed">Confirmed</option><option value="preparing">Preparing</option><option value="ready">Ready</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select></div><div class="field"><label for="p-${esc(o.id)}">Payment status</label><select id="p-${esc(o.id)}"><option value="unpaid">Unpaid</option><option value="pending">Pending / Unpaid</option><option value="verify_payment">Verify payment</option><option value="paid_half">Paid half</option><option value="paid">Paid in full</option><option value="failed">Failed</option><option value="refunded">Refunded</option></select></div><button class="save-button" data-save-order="${esc(o.id)}">Save changes</button></div></div></article>`;
+  return `<article class="order"><div class="order-top"><div style="min-width:0"><h3 class="order-title">${esc(o.order_number||"Order")}</h3><div class="order-meta">${esc(date)}</div><div class="chips" style="margin-top:9px;margin-bottom:0">${isNew?'<span class="chip new">✦ NEW ORDER</span>':""}<span class="chip ${esc(status)}">${status==="pending"?"AWAITING CUSTOMER CONFIRMATION":esc(status)}</span><span class="chip ${esc(pay)}">Payment: TO DISCUSS IN CHAT</span></div></div><div class="order-total">${php(o.total_php)}</div></div><div class="order-body"><div class="customer">${esc(o.customer_name||"Customer")}</div><div class="detail-grid"><div class="detail"><label>Contact</label>${esc(o.phone||"No phone")}<br>${esc(o.customer_email||"No email")}</div><div class="detail"><label>Requested date</label>${esc(o.requested_date||"Not specified")}<br>${esc(o.fulfilment||"Fulfilment not specified")}</div><div class="detail"><label>Delivery / pickup</label>${esc(o.delivery_address||"Pickup")}</div><div class="detail"><label>Payment</label>Discuss in Messenger / Instagram<br>Total: ${php(o.total_php)}<br>Not paid online</div></div><div class="items">${esc(items)}</div><div class="notes"><strong>Customer notes:</strong> ${esc(o.notes||"None")}</div><div class="order-actions"><div class="field"><label for="s-${esc(o.id)}">Order status</label><select id="s-${esc(o.id)}"><option value="pending">Awaiting customer confirmation</option><option value="confirmed">Confirmed</option><option value="preparing">Preparing</option><option value="ready">Ready</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select></div><div class="field"><label for="p-${esc(o.id)}">Payment status</label><select id="p-${esc(o.id)}"><option value="unpaid">Unpaid</option><option value="pending">Pending / Unpaid</option><option value="verify_payment">Verify payment</option><option value="paid_half">Paid half</option><option value="paid">Paid in full</option><option value="failed">Failed</option><option value="refunded">Refunded</option></select></div><button class="save-button" data-save-order="${esc(o.id)}">Save changes</button><button class="delete-order-button" data-delete-order="${esc(o.id)}" type="button">Delete order</button></div></div></article>`;
  }).join("");
  for(const o of rows){const st=$("s-"+o.id),ps=$("p-"+o.id);if(st)st.value=o.status||"pending";if(ps)ps.value=o.payment_status||"unpaid"}
 }
 setInterval(()=>{if(db&&activeUserId&&!document.hidden)load(true)},30000);
 async function saveOrder(id){const paymentStatus=$("p-"+id).value;const order=cachedOrders.find(o=>o.id===id);const total=Number(order?.total_php||0);const amountPaid=paymentStatus==="paid"?total:paymentStatus==="paid_half"?Math.ceil(total/2):0;const balance=Math.max(0,total-amountPaid);const {error}=await db.from("orders").update({status:$("s-"+id).value,payment_status:paymentStatus,amount_paid_php:amountPaid,balance_due_php:balance,updated_at:new Date().toISOString()}).eq("id",id);if(error){alert(error.message);return}await load()}
 
+
+async function deleteOrder(id,button){
+ const order=cachedOrders.find(o=>String(o.id)===String(id));
+ if(!order){alert("This order is no longer in the current list. Refresh and try again.");return}
+ const label=order.order_number||String(order.id);
+ if(!window.confirm("Permanently delete order "+label+" for "+(order.customer_name||"this customer")+"? Its item details will also be deleted. This cannot be undone."))return;
+ button.disabled=true;button.textContent="Deleting…";
+ try{
+  const {data,error}=await db.rpc("delete_order_by_id",{p_order_id:String(id)});
+  if(error)throw error;
+  if(Number(data)!==1)throw new Error("Order was not found or was already deleted. Refresh the dashboard.");
+  cachedOrders=cachedOrders.filter(o=>String(o.id)!==String(id));seenOrderIds.delete(id);
+  $("statAll").textContent=cachedOrders.length;
+  $("statNew").textContent=cachedOrders.filter(o=>(o.status||"").toLowerCase()==="pending").length;
+  $("statProgress").textContent=cachedOrders.filter(o=>["confirmed","preparing","ready"].includes((o.status||"").toLowerCase())).length;
+  $("statRevenue").textContent=php(cachedOrders.filter(o=>(o.status||"").toLowerCase()!=="cancelled").reduce((sum,o)=>sum+Number(o.total_php||0),0));
+  renderOrders();$("clearOrdersMessage").textContent="Deleted order "+label+" successfully.";
+ }catch(err){console.error("Delete selected order failed",err);alert("Could not delete this order: "+(err.message||String(err))+". Confirm the selected-order SQL migration has been run.");button.disabled=false;button.textContent="Delete order";}
+}
+
 async function clearAllOrders(){
  const button=$("clearOrders"),message=$("clearOrdersMessage");
- if(!activeUserId){message.textContent="Please sign in again before clearing orders.";return}
- if(!cachedOrders.length){message.textContent="There are no orders in the dashboard list to clear.";return}
+ if(!activeUserId){message.textContent="Please sign in again before clearing orders.";alert("Your owner session is missing. Sign out, sign in again, and retry.");return}
+ if(!cachedOrders.length){message.textContent="There are no orders in the dashboard list to clear.";alert("No orders are currently loaded. Refresh the dashboard and check the order list first.");return}
  const first=window.confirm("This permanently deletes ALL orders stored in CzyFit, including their order-item rows. This cannot be undone. Continue?");
  if(!first)return;
- const typed=window.prompt('To confirm permanent deletion of every order, type DELETE ALL ORDERS exactly:');
- if(typed!=="DELETE ALL ORDERS"){message.textContent="Nothing was deleted. Confirmation did not match.";return}
- button.disabled=true;button.textContent="Deleting orders…";message.textContent="Securely deleting orders…";
+ const typed=window.prompt('Type exactly DELETE ALL ORDERS to permanently delete every stored order:');
+ if(typed===null)return;
+ if(typed.trim()!=="DELETE ALL ORDERS"){message.textContent="Nothing was deleted. You must type DELETE ALL ORDERS exactly.";alert("Confirmation did not match. Nothing was deleted.");return}
+ button.disabled=true;button.textContent="Deleting…";message.textContent="Contacting Supabase to delete all orders…";
  try{
+  if(!db)throw new Error("Supabase is not connected. Refresh and sign in again.");
   const {data,error}=await db.rpc("clear_all_orders");
   if(error)throw error;
-  seenOrderIds.clear();
-  await load(true);
-  message.textContent=Number(data)===1?"Successfully deleted 1 order.":`Successfully deleted ${Number(data)||0} orders.`;
+  const count=Number(data);
+  cachedOrders=[];seenOrderIds.clear();
+  $("statAll").textContent="0";$("statNew").textContent="0";$("statProgress").textContent="0";$("statRevenue").textContent=php(0);
+  renderOrders();
+  message.textContent="Successfully deleted "+(Number.isFinite(count)?count:0)+" orders.";
+  alert(message.textContent);
  }catch(err){
   console.error("Clear all orders failed",err);
-  message.textContent="Could not clear orders: "+(err.message||String(err))+". Confirm the owner cleanup SQL migration has been run in Supabase.";
+  const detail=err?.message||err?.details||String(err);
+  message.textContent="FAILED: "+detail;
+  alert("Could not clear orders. Supabase returned: "+detail+"\n\nNo success was reported. Check that the clear_all_orders SQL function exists and that your signed-in account is in public.order_admins.");
  }finally{
   button.disabled=false;button.textContent="Clear all test orders";
  }
